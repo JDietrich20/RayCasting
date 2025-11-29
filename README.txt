@@ -1,5 +1,20 @@
 Julianna Dietrich
-HW3 Ray Casting 
+Ray Casting Assignment 
+
+* <= 3 spheres + 1 plane
+* Point light source (intensity and location)
+* Eye position
+* Scene configuration
+* Surface properties (k value in lighting model)
+* View plane size and location 
+* Shadow rays 
+* Anti-aliasing (supersampling)
+
+Extra:
+(X) Texture Mapping 
+(X) Add other objects like ellipsoids, triangles, boxes, etc. 
+
+___________________________________________________________________________
 
 To run project...
 Compile: g++ -std=c++17 -O2 main.cc -o hw3

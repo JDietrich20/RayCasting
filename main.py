@@ -15,7 +15,7 @@ Extra:
 (X) Texture Mapping 
 (X) Add other objects like ellipsoids, triangles, boxes, etc. 
 """
-# renderer.py
+
 from PIL import Image
 import math
 from objects import Sphere, Plane, Cube, Pyramid, normalize, subtract, dot, add, mul, length, EPS
