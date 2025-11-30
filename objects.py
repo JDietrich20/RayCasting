@@ -1,36 +1,9 @@
+from vec3 import E, add, subtract, dot, mul, normalize, cross
 import math
 
-EPS = 1e-6
+# Object defintions, intersection methods, and normal calculations for various shapes.
 
-def add(a, b):
-    return (a[0]+b[0], a[1]+b[1], a[2]+b[2])
-
-def sub(a, b):
-    return (a[0]-b[0], a[1]-b[1], a[2]-b[2])
-
-def subtract(a, b):
-    return sub(a, b)
-
-def mul(v, s):
-    return (v[0]*s, v[1]*s, v[2]*s)
-
-def dot(a, b):
-    return a[0]*b[0] + a[1]*b[1] + a[2]*b[2]
-
-def cross(a, b):
-    return (a[1]*b[2] - a[2]*b[1],
-            a[2]*b[0] - a[0]*b[2],
-            a[0]*b[1] - a[1]*b[0])
-
-def length(v):
-    return math.sqrt(dot(v, v))
-
-def normalize(v):
-    L = length(v)
-    if L == 0:
-        return (0.0, 0.0, 0.0)
-    return (v[0]/L, v[1]/L, v[2]/L)
-
+# Object definition of a Sphere
 class Sphere:
     def __init__(self, location, radius, color, texture=None):
         self.location = location
@@ -38,9 +11,8 @@ class Sphere:
         self.color = color
         self.texture = texture
 
-
     def intersect(self, ray_origin, ray_direction):
-        oc = sub(ray_origin, self.location)
+        oc = subtract(ray_origin, self.location)
         a = dot(ray_direction, ray_direction)
         b = 2.0 * dot(oc, ray_direction)
         c = dot(oc, oc) - self.radius * self.radius
@@ -51,18 +23,18 @@ class Sphere:
         t0 = (-b - sqrt_d) / (2*a)
         t1 = (-b + sqrt_d) / (2*a)
         t = None
-        if t0 > EPS:
+        if t0 > E:
             t = t0
-        elif t1 > EPS:
+        elif t1 > E:
             t = t1
         return t
 
     def get_normal(self, point):
-        n = sub(point, self.location)
+        n = subtract(point, self.location)
         return normalize(n)
 
 
-
+# Object definition of a Plane
 class Plane:
     def __init__(self, point=(0,0,0), normal=(0.0, 1.0, 0.0), color=(255,255,255), texture=None, uv_scale=1.0):
         self.point = point
@@ -73,10 +45,10 @@ class Plane:
 
     def intersect(self, ray_origin, ray_dir):
         denom = dot(ray_dir, self.normal)
-        if abs(denom) < EPS:
+        if abs(denom) < E:
             return None
         t = dot(subtract(self.point, ray_origin), self.normal) / denom
-        if t < EPS:
+        if t < E:
             return None
         return t
 
@@ -84,7 +56,7 @@ class Plane:
         return self.normal
 
 
-
+# Object definition of a Pyramid
 class Pyramid:
     def __init__(self, base_center, base_size, height, color=(200,200,200)):
         half = base_size / 2.0
@@ -121,7 +93,7 @@ class Pyramid:
         hit_tri = None
         for tri in self.tris:
             t = tri.intersect(ray_origin, ray_direction)
-            if t is not None and t > EPS and (closest_t is None or t < closest_t):
+            if t is not None and t > E and (closest_t is None or t < closest_t):
                 closest_t = t
                 hit_tri = tri
         if hit_tri is None:
@@ -137,6 +109,7 @@ class Pyramid:
         return interpolated
 
 
+# Object definition of a Triangle
 class Triangle:
     def __init__(self, v0, v1, v2, color=(200,200,200)):
         self.v0 = v0
@@ -144,20 +117,20 @@ class Triangle:
         self.v2 = v2
         self.color = color
 
-        edge1 = sub(v1, v0)
-        edge2 = sub(v2, v0)
+        edge1 = subtract(v1, v0)
+        edge2 = subtract(v2, v0)
         self.normal = normalize(cross(edge1, edge2))
 
     def intersect(self, ray_origin, ray_direction):
-        edge1 = sub(self.v1, self.v0)
-        edge2 = sub(self.v2, self.v0)
+        edge1 = subtract(self.v1, self.v0)
+        edge2 = subtract(self.v2, self.v0)
         h = cross(ray_direction, edge2)
         a = dot(edge1, h)
-        if abs(a) < EPS:
+        if abs(a) < E:
             return None
 
         f = 1.0 / a
-        s = sub(ray_origin, self.v0)
+        s = subtract(ray_origin, self.v0)
         u = f * dot(s, h)
         if u < 0.0 or u > 1.0:
             return None
@@ -168,7 +141,7 @@ class Triangle:
             return None
 
         t = f * dot(edge2, q)
-        return t if t > EPS else None
+        return t if t > E else None
     
     def barycentric_coords(self, p):
         a, b, c = self.v0, self.v1, self.v2
@@ -186,14 +159,11 @@ class Triangle:
         u = 1 - v - w
         return u, v, w
 
-
-
-
     def get_normal(self, hit_point=None):
         return self.normal
 
 
-
+# Object definition of a Cube
 class Cube:
     def __init__(self, center, size, color=(200,200,200)):
         half = size / 2.0
