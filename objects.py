@@ -64,22 +64,25 @@ class Sphere:
 
 
 class Plane:
-    def __init__(self, location, normal, color, texture=None):
-        self.location = location  
-        self.normal = normalize(normal)
-        self.color = color   
-        self.texture = texture 
+    def __init__(self, point=(0,0,0), normal=(0.0, 1.0, 0.0), color=(255,255,255), texture=None, uv_scale=1.0):
+        self.point = point
+        self.normal = normalize(normal) 
+        self.color = color
+        self.texture = texture
+        self.uv_scale = uv_scale
 
-
-    def intersect(self, ray_origin, ray_direction):
-        denom = dot(self.normal, ray_direction)
+    def intersect(self, ray_origin, ray_dir):
+        denom = dot(ray_dir, self.normal)
         if abs(denom) < EPS:
             return None
-        t = dot(sub(self.location, ray_origin), self.normal) / denom
-        return t if t > EPS else None
+        t = dot(subtract(self.point, ray_origin), self.normal) / denom
+        if t < EPS:
+            return None
+        return t
 
-    def get_normal(self, point=None):
+    def get_normal(self, hit_point=None, extra=None):
         return self.normal
+
 
 
 class Pyramid:
